@@ -1,0 +1,18 @@
+{
+  "name": "patcharan",
+  "version": "0.1.0",
+  "description": "patch/unpatch JavaScript functions multiple times easily",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test ./test.js"
+  },
+  "keywords": [
+    "monkeypatch",
+    "swizzle",
+    "wrapping",
+    "shim"
+  ],
+  "author": "David Luna <luna.bistuer@gmail.com>",
+  "license": "MIT"
+}
