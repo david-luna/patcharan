@@ -1,4 +1,3 @@
-
 const _queues_key = Symbol.for('patcharan_queues');
 const log = (...args) => console.log(...args);
 const isFunction = (f) => typeof f === 'function';
@@ -28,7 +27,7 @@ export function patch(mod, name, patcher) {
   }
 
   // Init queues
-  const queues = mod[_queues_key] = mod[_queues_key] || {}; 
+  const queues = (mod[_queues_key] = mod[_queues_key] || {});
 
   // Get the original function
   const original = mod[name];
@@ -61,7 +60,7 @@ export function unpatch(mod, name, patcher) {
     return;
   }
   // remove the patcher if found and not the original function
-  const index = queues[name].findIndex(p => p === patcher);
+  const index = queues[name].findIndex((p) => p === patcher);
   if (index > 0) {
     queues[name].splice(index, 1);
     defineProperty(mod, name, applyPatches(queues[name]));
@@ -73,7 +72,7 @@ export function unpatch(mod, name, patcher) {
 /**
  * Recreates a function with the given patches in a queue.
  * The 1st item is the original function.
- * 
+ *
  * @param {PatcherFunction[]} queue
  * @returns {AnyFunction}
  */
@@ -90,17 +89,17 @@ function applyPatches(queue) {
 /**
  * Sets a property on an object, preserving its enumerability.
  * This function assumes that the property is already writable.
- * 
- * @param {any} obj 
- * @param {string} name 
- * @param {any} value 
+ *
+ * @param {any} obj
+ * @param {string} name
+ * @param {any} value
  */
-function defineProperty (obj, name, value) {
+function defineProperty(obj, name, value) {
   var enumerable = !!obj[name] && obj.propertyIsEnumerable(name);
   Object.defineProperty(obj, name, {
     configurable: true,
     enumerable: enumerable,
     writable: true,
-    value: value
+    value: value,
   });
 }

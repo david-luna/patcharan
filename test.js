@@ -1,7 +1,7 @@
 import assert from 'node:assert';
-import {test} from 'node:test';
+import { test } from 'node:test';
 
-import {patch, unpatch} from './index.js';
+import { patch, unpatch } from './index.js';
 
 test.skip('patch - should allow patching multiple times', () => {
   const calls = [];
@@ -9,32 +9,32 @@ test.skip('patch - should allow patching multiple times', () => {
     num: 0,
     accumulate: function (a, b) {
       this.num += a + b;
-    }
+    },
   };
 
   // 1st patch wraps the original
-  patch(mod, 'accumulate', function(orig) {
-    return function(a, b) {
+  patch(mod, 'accumulate', function (orig) {
+    return function (a, b) {
       calls.push([a, b]);
       return orig.apply(this, arguments);
-    }
+    };
   });
 
   // 2nd patch wraps the first (gets precedence)
-  patch(mod, 'accumulate', function(orig) {
-    return function(a, b) {
+  patch(mod, 'accumulate', function (orig) {
+    return function (a, b) {
       calls.push(`${a}+${b}`);
       return orig.apply(this, arguments);
-    }
+    };
   });
 
   // Call the method
-  mod.accumulate(1,2);
-  mod.accumulate(3,4);
+  mod.accumulate(1, 2);
+  mod.accumulate(3, 4);
 
   // assert
   assert.strictEqual(mod.num, 10);
-  assert.deepStrictEqual(calls, ['1+2', [1,2], '3+4', [3,4]]);
+  assert.deepStrictEqual(calls, ['1+2', [1, 2], '3+4', [3, 4]]);
 });
 
 test('patch - should allow unpatch no mater the order', () => {
@@ -43,47 +43,49 @@ test('patch - should allow unpatch no mater the order', () => {
     num: 0,
     accumulate: function (a, b) {
       this.num += a + b;
-    }
+    },
   };
 
   // 1st patch wraps the original
-  const firstPatch = function(orig) {
-    return function(a, b) {
+  const firstPatch = function (orig) {
+    return function (a, b) {
       calls.push([a, b]);
       return orig.apply(this, arguments);
-    }
+    };
   };
   patch(mod, 'accumulate', firstPatch);
 
   // 2nd patch wraps the first (gets precedence)
-  const secondPatch = function(orig) {
-    return function(a, b) {
+  const secondPatch = function (orig) {
+    return function (a, b) {
       calls.push(`${a}+${b}`);
       return orig.apply(this, arguments);
-    }
+    };
   };
   patch(mod, 'accumulate', secondPatch);
 
   // Call the method
-  mod.accumulate(1,2);
-  mod.accumulate(3,4);
+  mod.accumulate(1, 2);
+  mod.accumulate(3, 4);
   // remove the 1st so 2nd now should wrap the original
   unpatch(mod, 'accumulate', firstPatch);
-  mod.accumulate(5,6);
+  mod.accumulate(5, 6);
   // remove the second so now we are have the original
   unpatch(mod, 'accumulate', secondPatch);
-  mod.accumulate(7,8);
+  mod.accumulate(7, 8);
 
   // assert
   assert.strictEqual(mod.num, 36);
-  assert.deepStrictEqual(calls, ['1+2', [1,2], '3+4', [3,4], '5+6']);
+  assert.deepStrictEqual(calls, ['1+2', [1, 2], '3+4', [3, 4], '5+6']);
 });
 
 // -- patch: single patch / unpatch round-trip
 
 test('patch - single patch and unpatch restores original behavior', () => {
   const mod = {
-    add(a, b) { return a + b; }
+    add(a, b) {
+      return a + b;
+    },
   };
   const patcher = (orig) => (a, b) => orig(a, b) * 10;
 
@@ -98,15 +100,19 @@ test('patch - single patch and unpatch restores original behavior', () => {
 
 test('patch - preserves return values through the chain', () => {
   const mod = {
-    greet(name) { return `hello ${name}`; }
+    greet(name) {
+      return `hello ${name}`;
+    },
   };
 
-  const upper = (orig) => function (...args) {
-    return orig.apply(this, args).toUpperCase();
-  };
-  const exclaim = (orig) => function (...args) {
-    return orig.apply(this, args) + '!';
-  };
+  const upper = (orig) =>
+    function (...args) {
+      return orig.apply(this, args).toUpperCase();
+    };
+  const exclaim = (orig) =>
+    function (...args) {
+      return orig.apply(this, args) + '!';
+    };
 
   patch(mod, 'greet', upper);
   patch(mod, 'greet', exclaim);
@@ -119,12 +125,15 @@ test('patch - preserves return values through the chain', () => {
 test('patch - preserves this context', () => {
   const mod = {
     value: 42,
-    getValue() { return this.value; }
+    getValue() {
+      return this.value;
+    },
   };
 
-  const doubler = (orig) => function () {
-    return orig.call(this) * 2;
-  };
+  const doubler = (orig) =>
+    function () {
+      return orig.call(this) * 2;
+    };
 
   patch(mod, 'getValue', doubler);
   assert.strictEqual(mod.getValue(), 84);
@@ -163,13 +172,21 @@ test('unpatch - does nothing when property is not a function', () => {
 });
 
 test('unpatch - does nothing when function was never patched', () => {
-  const mod = { fn() { return 1; } };
+  const mod = {
+    fn() {
+      return 1;
+    },
+  };
   assert.doesNotThrow(() => unpatch(mod, 'fn', () => {}));
   assert.strictEqual(mod.fn(), 1);
 });
 
 test('unpatch - does nothing when patcher was not in the queue', () => {
-  const mod = { fn() { return 1; } };
+  const mod = {
+    fn() {
+      return 1;
+    },
+  };
   const applied = (orig) => () => orig() + 1;
   const notApplied = (orig) => () => orig() + 2;
 
@@ -197,7 +214,7 @@ test('patch - preserves non-enumerability of the patched property', () => {
     value: () => {},
     configurable: true,
     writable: true,
-    enumerable: false
+    enumerable: false,
   });
 
   patch(mod, 'fn', (orig) => orig);
@@ -208,11 +225,18 @@ test('patch - preserves non-enumerability of the patched property', () => {
 
 test('patch - can patch different functions on the same object independently', () => {
   const mod = {
-    foo() { return 'foo'; },
-    bar() { return 'bar'; }
+    foo() {
+      return 'foo';
+    },
+    bar() {
+      return 'bar';
+    },
   };
 
-  const upper = (orig) => function () { return orig.call(this).toUpperCase(); };
+  const upper = (orig) =>
+    function () {
+      return orig.call(this).toUpperCase();
+    };
   patch(mod, 'foo', upper);
 
   assert.strictEqual(mod.foo(), 'FOO');
@@ -227,12 +251,26 @@ test('patch - can patch different functions on the same object independently', (
 test('unpatch - removing middle patch keeps first and last intact', () => {
   const calls = [];
   const mod = {
-    run() { calls.push('orig'); }
+    run() {
+      calls.push('orig');
+    },
   };
 
-  const first = (orig) => function () { calls.push('1st'); orig.call(this); };
-  const second = (orig) => function () { calls.push('2nd'); orig.call(this); };
-  const third = (orig) => function () { calls.push('3rd'); orig.call(this); };
+  const first = (orig) =>
+    function () {
+      calls.push('1st');
+      orig.call(this);
+    };
+  const second = (orig) =>
+    function () {
+      calls.push('2nd');
+      orig.call(this);
+    };
+  const third = (orig) =>
+    function () {
+      calls.push('3rd');
+      orig.call(this);
+    };
 
   patch(mod, 'run', first);
   patch(mod, 'run', second);
@@ -251,7 +289,9 @@ test('unpatch - removing middle patch keeps first and last intact', () => {
 
 test('unpatch - removing all patches restores the original function', () => {
   const mod = {
-    val() { return 'original'; }
+    val() {
+      return 'original';
+    },
   };
 
   const a = (orig) => () => orig() + '-a';
