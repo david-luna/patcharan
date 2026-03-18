@@ -7,13 +7,13 @@
   "type": "module",
   "scripts": {
     "test": "node --test ./test.js",
-    "lint": "npm run lint:eslint && npm run typecheck",
+    "lint": "npm run lint:eslint && npm run lint:prettier && npm run typecheck",
     "lint:eslint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
+    "lint:prettier": "prettier --check",
+    "lint:fix": "eslint . --fix && prettier --write .",
     "docs": "serve docs",
-    "typecheck": "tsc --noEmit",
-    "build:types": "tsc"
+    "typecheck": "tsc --declarationDir ./build && diff ./index.d.ts ./build/index.d.ts && rm -rf ./build",
+    "build:types": "tsc && prettier --write ./index.d.ts"
   },
   "keywords": [
     "monkeypatch",
