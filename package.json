@@ -9,11 +9,11 @@
     "test": "node --test ./test.js",
     "lint": "npm run lint:eslint && npm run lint:prettier && npm run typecheck",
     "lint:eslint": "eslint .",
-    "lint:prettier": "prettier --check",
+    "lint:prettier": "prettier --check .",
     "lint:fix": "eslint . --fix && prettier --write .",
     "docs": "serve docs",
     "typecheck": "tsc --declarationDir ./build && diff ./index.d.ts ./build/index.d.ts && rm -rf ./build",
-    "build:types": "tsc && prettier --write ./index.d.ts"
+    "build:types": "tsc"
   },
   "keywords": [
     "monkeypatch",
