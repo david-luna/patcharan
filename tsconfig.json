@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    // Type-check JavaScript source via JSDoc
+    "allowJs": true,
+    "checkJs": true,
+
+    // Emit only .d.ts declaration files, not compiled JS
+    "declaration": true,
+    "declarationDir": ".",
+    "emitDeclarationOnly": true,
+
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["index.js"],
+  "exclude": ["node_modules", "docs", "test.js"]
+}

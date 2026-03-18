@@ -3,12 +3,17 @@
   "version": "0.1.0",
   "description": "patch/unpatch JavaScript functions multiple times easily",
   "main": "index.js",
+  "types": "index.d.ts",
   "type": "module",
   "scripts": {
     "test": "node --test ./test.js",
-    "lint": "eslint .",
+    "lint": "npm run lint:eslint && npm run typecheck",
+    "lint:eslint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "docs": "serve docs",
+    "typecheck": "tsc --noEmit",
+    "build:types": "tsc"
   },
   "keywords": [
     "monkeypatch",
@@ -23,6 +28,8 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "globals": "^17.4.0",
-    "prettier": "^3.8.1"
+    "prettier": "^3.8.1",
+    "serve": "^14.2.6",
+    "typescript": "^5.9.3"
   }
 }

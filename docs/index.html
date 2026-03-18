@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>patcharan</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <h1>patcharan</h1>
+      <p class="tagline">Patch and unpatch JavaScript functions multiple times, in any order.</p>
+      <code class="install-cmd">npm install patcharan</code>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section id="about">
+      <p>
+        <strong>patcharan</strong> lets you wrap JavaScript functions with multiple patches and remove them
+        individually — even out of order. Patches are stacked and tracked, so removing one automatically
+        rebuilds the function with the remaining patches intact.
+      </p>
+    </section>
+
+    <section id="usage">
+      <h2>Usage</h2>
+      <pre><code>import { patch, unpatch } from 'patcharan';
+
+const mod = {
+  greet(name) {
+    return `hello ${name}`;
+  }
+};
+
+// A patcher receives the original function and returns a replacement
+const loud = (orig) => function (...args) {
+  return orig.apply(this, args).toUpperCase();
+};
+
+patch(mod, 'greet', loud);
+mod.greet('world'); // => "HELLO WORLD"
+
+unpatch(mod, 'greet', loud);
+mod.greet('world'); // => "hello world"</code></pre>
+
+      <h3>Stacking patches</h3>
+      <p>
+        Multiple patches can be applied to the same function. When a patch is removed with
+        <code>unpatch</code>, the remaining patches are re-applied in order so the function stays consistent.
+      </p>
+      <pre><code>const logger = (orig) => function (...args) {
+  console.log('called with', args);
+  return orig.apply(this, args);
+};
+
+const timer = (orig) => function (...args) {
+  const start = performance.now();
+  const result = orig.apply(this, args);
+  console.log(`took ${performance.now() - start}ms`);
+  return result;
+};
+
+patch(mod, 'greet', logger);
+patch(mod, 'greet', timer);
+
+// Remove logger while keeping timer active
+unpatch(mod, 'greet', logger);</code></pre>
+    </section>
+
+    <section id="api">
+      <h2>API Reference</h2>
+
+      <div class="api-entry">
+        <div class="api-sig"><code>patch(obj, name, patcher)</code></div>
+        <p>Wraps <code>obj[name]</code> with the function returned by <code>patcher</code>.</p>
+        <table>
+          <thead>
+            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>obj</code></td>
+              <td><code>object</code></td>
+              <td>The object that owns the function to patch.</td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td><code>string</code></td>
+              <td>Property name of the function to patch.</td>
+            </tr>
+            <tr>
+              <td><code>patcher</code></td>
+              <td><code>(original) =&gt; replacement</code></td>
+              <td>Receives the current function and must return the replacement.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="api-entry">
+        <div class="api-sig"><code>unpatch(obj, name, patcher)</code></div>
+        <p>
+          Removes a previously applied <code>patcher</code> and rebuilds <code>obj[name]</code>
+          from the remaining patches. Arguments are the same as <code>patch</code>.
+        </p>
+        <table>
+          <thead>
+            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>obj</code></td>
+              <td><code>object</code></td>
+              <td>The object that owns the patched function.</td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td><code>string</code></td>
+              <td>Property name of the patched function.</td>
+            </tr>
+            <tr>
+              <td><code>patcher</code></td>
+              <td><code>(original) =&gt; replacement</code></td>
+              <td>The same patcher reference that was passed to <code>patch</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Released under the <a href="../LICENSE">MIT License</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { patch, unpatch } from './index.js';
 
-test.skip('patch - should allow patching multiple times', () => {
+test('patch - should allow patching multiple times', () => {
   const calls = [];
   const mod = {
     num: 0,
@@ -41,6 +41,10 @@ test('patch - should allow unpatch no mater the order', () => {
   const calls = [];
   const mod = {
     num: 0,
+    /**
+     * @param {number} a 
+     * @param {number} b 
+     */
     accumulate: function (a, b) {
       this.num += a + b;
     },

@@ -1,19 +1,25 @@
 const _queues_key = Symbol.for('patcharan_queues');
-const log = (...args) => console.log(...args);
-const isFunction = (f) => typeof f === 'function';
+const log = (/** @type {any[]} */ ...args) => console.log(...args);
+const isFunction = (/** @type {any} */f) => typeof f === 'function';
 
 /**
  * @typedef {(...args: any[]) => any} AnyFunction
  */
+
 /**
- * @typedef {(fn: AnyFunction) => typeof fn} PatcherFunction
+ * @template T
+ * @typedef {{
+ *   [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never
+ * }[keyof T]} FunctionKeys
  */
 
 /**
  * @template T
+ * @template {FunctionKeys<T>} K
  * @param {T} mod
- * @param {keyof T} name
- * @param {PatcherFunction} patcher
+ * @param {K} name
+ * @param {(original: T[K]) => void} patcher
+ * @returns {void}
  */
 export function patch(mod, name, patcher) {
   if (!mod || !isFunction(mod[name])) {
@@ -27,6 +33,7 @@ export function patch(mod, name, patcher) {
   }
 
   // Init queues
+  // @ts-expect-error -- we ar using a new key internally
   const queues = (mod[_queues_key] = mod[_queues_key] || {});
 
   // Get the original function
@@ -43,9 +50,11 @@ export function patch(mod, name, patcher) {
 
 /**
  * @template T
+ * @template {FunctionKeys<T>} K
  * @param {T} mod
- * @param {keyof T} name
- * @param {PatcherFunction} patcher
+ * @param {K} name
+ * @param {(original: T[K]) => void} patcher
+ * @returns {void}
  */
 export function unpatch(mod, name, patcher) {
   if (!mod || !isFunction(mod[name])) {
@@ -53,10 +62,11 @@ export function unpatch(mod, name, patcher) {
     return;
   }
 
-  /** @type {Function[]} */
+  /** @type {Record<string | number | symbol, AnyFunction[]>} */
+  // @ts-expect-error -- accessing internal property
   const queues = mod[_queues_key];
   if (!queues || !queues[name]) {
-    log(`function "${name}" has not been patched`);
+    log(`function "${String(name)}" has not been patched`);
     return;
   }
   // remove the patcher if found and not the original function
@@ -73,7 +83,7 @@ export function unpatch(mod, name, patcher) {
  * Recreates a function with the given patches in a queue.
  * The 1st item is the original function.
  *
- * @param {PatcherFunction[]} queue
+ * @param {AnyFunction[]} queue
  * @returns {AnyFunction}
  */
 function applyPatches(queue) {
@@ -91,7 +101,7 @@ function applyPatches(queue) {
  * This function assumes that the property is already writable.
  *
  * @param {any} obj
- * @param {string} name
+ * @param {string | number | symbol} name
  * @param {any} value
  */
 function defineProperty(obj, name, value) {
