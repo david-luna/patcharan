@@ -10,7 +10,9 @@
   --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;

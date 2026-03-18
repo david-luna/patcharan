@@ -16,7 +16,7 @@ import { patch, unpatch } from 'patcharan';
 const mod = {
   greet(name) {
     return `hello ${name}`;
-  }
+  },
 };
 
 // Define a patcher: receives the original and returns a wrapped version
@@ -38,17 +38,19 @@ mod.greet('world'); // => "hello world"
 Multiple patches can be applied to the same function. Each patch wraps the result of the previous one. When a patch is removed with `unpatch`, the remaining patches are re-applied in order so the function stays consistent.
 
 ```js
-const logger = (orig) => function (...args) {
-  console.log('called with', args);
-  return orig.apply(this, args);
-};
+const logger = (orig) =>
+  function (...args) {
+    console.log('called with', args);
+    return orig.apply(this, args);
+  };
 
-const timer = (orig) => function (...args) {
-  const start = performance.now();
-  const result = orig.apply(this, args);
-  console.log(`took ${performance.now() - start}ms`);
-  return result;
-};
+const timer = (orig) =>
+  function (...args) {
+    const start = performance.now();
+    const result = orig.apply(this, args);
+    console.log(`took ${performance.now() - start}ms`);
+    return result;
+  };
 
 patch(mod, 'greet', logger);
 patch(mod, 'greet', timer);

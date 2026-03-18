@@ -42,8 +42,8 @@ test('patch - should allow unpatch no mater the order', () => {
   const mod = {
     num: 0,
     /**
-     * @param {number} a 
-     * @param {number} b 
+     * @param {number} a
+     * @param {number} b
      */
     accumulate: function (a, b) {
       this.num += a + b;

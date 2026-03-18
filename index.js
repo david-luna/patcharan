@@ -1,6 +1,6 @@
 const _queues_key = Symbol.for('patcharan_queues');
 const log = (/** @type {any[]} */ ...args) => console.log(...args);
-const isFunction = (/** @type {any} */f) => typeof f === 'function';
+const isFunction = (/** @type {any} */ f) => typeof f === 'function';
 
 /**
  * @typedef {(...args: any[]) => any} AnyFunction
