@@ -1,6 +1,6 @@
 {
   "name": "patcharan",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "patch/unpatch JavaScript functions multiple times easily",
   "main": "index.js",
   "types": "index.d.ts",
@@ -9,6 +9,14 @@
     "access": "public",
     "provenance": true
   },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "package.json",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE"
+  ],  
   "engines": {
     "node": ">=18"
   },
