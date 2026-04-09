@@ -14,6 +14,12 @@ All notable changes in this project will be documented in this file.
 
 ### :house: Internal
 
+## 0.1.2
+
+### :house: Internal
+
+* include `files` in `package.json` to only publish the required asssets.
+
 ## 0.1.1
 
 ### :bug: Bug Fixes
