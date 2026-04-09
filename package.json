@@ -5,6 +5,13 @@
   "main": "index.js",
   "types": "index.d.ts",
   "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "node --test ./test.js",
     "lint": "npm run lint:eslint && npm run lint:prettier && npm run typecheck",
@@ -23,6 +30,14 @@
   ],
   "author": "David Luna <luna.bistuer@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/david-luna/patcharan.git"
+  },
+  "bugs": {
+    "url": "https://github.com/david-luna/patcharan/issues"
+  },
+  "homepage": "https://david-luna.github.io/patcharan/",
   "devDependencies": {
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
