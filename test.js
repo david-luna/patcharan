@@ -163,6 +163,19 @@ test('patch - does nothing when patcher is not a function', () => {
   assert.strictEqual(mod.fn, original);
 });
 
+test('patch - does nothing when patcher is already applied', () => {
+  const mod = { fn() {} };
+  const original = mod.fn;
+  const patcher = (orig) => {
+    return function patchFn() {
+      return orig.toString();
+    };
+  };
+  patch(mod, 'fn', patcher);
+  patch(mod, 'fn', patcher);
+  assert.strictEqual(mod.fn(), original.toString());
+});
+
 // -- unpatch: guard clauses
 
 test('unpatch - does nothing when mod is null or undefined', () => {

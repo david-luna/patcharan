@@ -39,8 +39,13 @@ export function patch(mod, name, patcher) {
   // Get the original function
   const original = mod[name];
 
-  if (!queues[name]) {
-    queues[name] = [original];
+  // Init queue for `name`
+  /** @type {AnyFunction[]} */
+  const queue = (queues[name] = queues[name] || [original]);
+
+  if (queue.find((p) => p === patcher)) {
+    log('patcher already applied');
+    return;
   }
 
   // Apply the patch and append the. patcher to the queue
